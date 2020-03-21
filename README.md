@@ -1,2 +1,3 @@
 # thumper
-A flutter widget for controlling an Iterable&lt;E>
+
+A flutter widget for controlling an `Iterable`.
