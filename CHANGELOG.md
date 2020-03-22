@@ -1,6 +1,9 @@
+## 0.1.8
+ - Remove type.  Really need a precommit here.
+
 ## 0.1.7
  - Expose fixed dimensions.
- 
+
 ## 0.1.6
  - Removed width parameter.
 
