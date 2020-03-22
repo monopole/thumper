@@ -7,40 +7,40 @@ void main() => runApp(ThumperApp());
 
 class ThumperApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => BlocProvider(
-        create: (context) =>
-            ThumperBloc<Fruit>.fromIterable(List.from(Fruit.values)),
-        child: MaterialApp(
-          title: 'Thumper Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: _MyScaffold(),
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Thumper Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
         ),
+        home: _MyScaffold(),
       );
 }
 
 class _MyScaffold extends StatelessWidget {
   @override
-  Widget build(BuildContext c) => Scaffold(
-        backgroundColor: Colors.blue.shade400,
-        appBar: AppBar(
-          title: Text('Fruit Thumper'),
-          leading: Icon(Icons.menu),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: BlocBuilder<ThumperBloc<Fruit>, ThumperState>(
-                  builder: (context, state) =>
-                      _textElement(state.thing.toString()),
+  Widget build(BuildContext c) => BlocProvider(
+        create: (context) =>
+            ThumperBloc<Fruit>.fromIterable(List.from(Fruit.values)),
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            title: Text('Fruit Thumper'),
+            leading: Icon(Icons.menu),
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: BlocBuilder<ThumperBloc<Fruit>, ThumperState>(
+                    builder: (context, state) =>
+                        _textElement(state.thing.toString()),
+                  ),
                 ),
               ),
-            ),
-            Expanded( child: Thumper<Fruit>()),
-          ],
+              Thumper<Fruit>(maxWidth: 400),
+            ],
+          ),
         ),
       );
 

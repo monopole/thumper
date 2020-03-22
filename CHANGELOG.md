@@ -1,3 +1,6 @@
+## 0.1.3
+ - Fixed bug.
+
 ## 0.1.2
  - Example in full app form, still buggy
 
