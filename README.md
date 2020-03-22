@@ -3,8 +3,8 @@
 A widget for controlling an `Iterable`.
 Shows reset, forward step, play, pause and speed controls.
 
-
-|-------------------------|-------------------------|
+| initial                 | later                   |
+| ----------------------- | ----------------------- |
 | ![screen shot 1][shot1] | ![screen shot 2][shot2] |
 
 [shot1]: ./images/shot1.png
