@@ -7,7 +7,7 @@ A slider controls iteration speed.
 
 ### Example
 
-The [example] iterates through a list of fruit names.
+The [example] iterates through a list of [fruits].
 
 | initial                 | playing                 |
 | ----------------------- | ----------------------- |
@@ -25,6 +25,7 @@ flutter -d web run
 For another thumper demo see the [gol_grid] widget.
 
 
+[fruits]: ./lib/data/fruit.dart
 [example]: ./example/lib/main.dart
 [shot1]: ./images/shot1.png
 [shot2]: ./images/shot2.png
