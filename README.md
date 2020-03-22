@@ -6,6 +6,9 @@ Buttons allow reset, forward step, and play/pause.
 
 A slider controls iteration speed.
 
+### Example
+
+The [example] iterates through a list of fruit names.
 
 | initial                 | playing                 |
 | ----------------------- | ----------------------- |
@@ -24,7 +27,8 @@ flutter -d web run
 For another thumper demo see the [gol_grid] widget.
 
 
-[gol_grid]: https://pub.dev/packages/gol_grid
+[example]: ./example/lib/main.dart
 [shot1]: ./images/shot1.png
 [shot2]: ./images/shot2.png
+[gol_grid]: https://pub.dev/packages/gol_grid
 [flutter]: https://flutter.dev/docs/get-started/install
