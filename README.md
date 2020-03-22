@@ -2,6 +2,8 @@
 
 A [`Thumper`] is a flutter widget that controls an `Iterable`.
 
+![screen shot 0][shot0]
+
 Buttons allow reset, forward step, and play/pause.
 A slider controls iteration speed.
 
@@ -14,7 +16,7 @@ The [example] iterates through a list of [fruits].
 | ![screen shot 1][shot1] | ![screen shot 2][shot2] |
 
 
-To run it, install [beta channel flutter] then:
+To try it in chrome, install [beta channel flutter] then:
 
 ```bash
 git clone git@github.com:monopole/thumper.git
@@ -28,6 +30,7 @@ For a more complex `Thumper` demo see the [`GolGrid`] widget.
 [`Thumper`]: https://pub.dev/packages/thumper
 [fruits]: ./lib/data/fruit.dart
 [example]: ./example/lib/main.dart
+[shot0]: ./images/thumper.png
 [shot1]: ./images/shot1.png
 [shot2]: ./images/shot2.png
 [`GolGrid`]: https://pub.dev/packages/gol_grid
