@@ -1,6 +1,6 @@
 name: thumper
 description: Widget for controlling an Iterable. Shows reset, forward step, play, pause and speed controls.
-version: 0.1.8
+version: 0.1.9
 homepage: https://github.com/monopole/thumper
 
 environment:

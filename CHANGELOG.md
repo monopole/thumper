@@ -1,5 +1,8 @@
+## 0.1.9
+ - Fix doc
+ 
 ## 0.1.8
- - Remove type.  Really need a precommit here.
+ - Remove typo.  Really need a precommit here.
 
 ## 0.1.7
  - Expose fixed dimensions.
