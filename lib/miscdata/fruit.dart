@@ -1,0 +1,35 @@
+/// Fruit is used in tests and demos.
+/// Better for reading than ints, easier than strings.
+/// Could use these in an image search to make an Iterable<Image>.
+enum Fruit {
+  apple,
+  apricot,
+  banana,
+  blackberry,
+  cantaloupe,
+  coconut,
+  cranberry,
+  date,
+  durian,
+  elderberry,
+  fig,
+  grapefruit,
+  guava,
+  jackfruit,
+  kiwi,
+  lemon,
+  lime,
+  longan,
+  loquat,
+  lychee,
+  mango,
+  nectarine,
+  orange,
+  peach,
+  pear,
+  pineapple,
+  prune,
+  raspberry,
+  strawberry,
+  watermelon
+}

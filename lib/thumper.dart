@@ -1,7 +1,4 @@
-library thumper;
+export 'src/thumper.dart';
+export 'src/thumper_bloc.dart';
+export 'src/thumper_state.dart';
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
