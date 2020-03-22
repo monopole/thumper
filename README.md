@@ -1,7 +1,7 @@
 # thumper
 
-A flutter widget for controlling an `Iterable`.
-Shows reset, step, play/pause and speed controls.
+A widget for controlling an `Iterable`.
+Shows reset, forward step, play, pause and speed controls.
 
 ### Demo
 
