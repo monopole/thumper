@@ -9,7 +9,13 @@ import 'thumper_event.dart';
 /// Controls include reset, forward step, play, pause, and speed.
 /// This widget doesn't show E or make an calls on E, but must get an
 /// instance of ThumperBloc<E> from the context (hence the parameterization).
+/// This widget has a fixed size, like an Icon.
 class Thumper<E> extends StatelessWidget {
+  /// Fixed width of this widget in logical pixels.
+  static const int width = 330;
+
+  /// Fixed height of this widget in logical pixels.
+  static const int height = 60;
   final Color onColor;
   final Color offColor;
 
@@ -19,7 +25,8 @@ class Thumper<E> extends StatelessWidget {
   });
 
   Widget build(BuildContext c) => Container(
-        constraints: BoxConstraints.tightFor(width: 330, height: 60),
+        constraints: BoxConstraints.tightFor(
+            width: width.toDouble(), height: height.toDouble()),
         child: _controlRow(c),
       );
 

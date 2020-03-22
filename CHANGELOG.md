@@ -1,3 +1,6 @@
+## 0.1.7
+ - Expose fixed dimensions.
+ 
 ## 0.1.6
  - Removed width parameter.
 

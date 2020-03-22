@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:thumper/data/fruit.dart';
 import 'package:thumper/thumper.dart';
 
-void main() => runApp(ThumperApp());
+void main() => runApp(DemoApp());
 
-class ThumperApp extends StatelessWidget {
+class DemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: 'Thumper Demo',
