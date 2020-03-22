@@ -34,11 +34,11 @@ class _MyScaffold extends StatelessWidget {
                 child: Center(
                   child: BlocBuilder<ThumperBloc<Fruit>, ThumperState>(
                     builder: (context, state) =>
-                        _textElement(state.thing.toString()),
+                        _textElement(state.thing.toString().substring(6)),
                   ),
                 ),
               ),
-              Thumper<Fruit>(maxWidth: 400),
+              Thumper<Fruit>(),
             ],
           ),
         ),
@@ -47,7 +47,7 @@ class _MyScaffold extends StatelessWidget {
   Widget _textElement(String text) {
     return Text(text,
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 64,
           color: Colors.greenAccent,
         ));
   }

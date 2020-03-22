@@ -6,27 +6,20 @@ import 'thumper_event.dart';
 
 /// A Thumper<E> is a row of controls associated with a ThumperBloc<E>,
 /// which in turn contains Iterable<E>.
-/// The controls include reset, step, play/pause, and a speed slider.
-/// The width of this is unconstrained, the height is limited.
+/// Controls include reset, forward step, play, pause, and speed.
 /// This widget doesn't show E or make an calls on E, but must get an
 /// instance of ThumperBloc<E> from the context (hence the parameterization).
 class Thumper<E> extends StatelessWidget {
-  static final double maxHeight = 60;
   final Color onColor;
   final Color offColor;
-  final Color backgroundColor;
-  final double maxWidth;
 
   Thumper({
-    this.onColor = Colors.yellow,
+    this.onColor = Colors.lightBlueAccent,
     this.offColor = Colors.blueGrey,
-    this.backgroundColor = Colors.black,
-    this.maxWidth = 80,
   });
 
   Widget build(BuildContext c) => Container(
-        color: backgroundColor,
-        constraints: BoxConstraints.expand(height: maxHeight, width: maxWidth),
+        constraints: BoxConstraints.tightFor(width: 330, height: 60),
         child: _controlRow(c),
       );
 
@@ -56,10 +49,10 @@ class Thumper<E> extends StatelessWidget {
           overlayColor: Colors.purple.withAlpha(32),
           overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
         ),
-        child: _slider(bloc),
+        child: _rawSlider(bloc),
       );
 
-  Widget _slider(ThumperBloc<E> bloc) => Slider(
+  Widget _rawSlider(ThumperBloc<E> bloc) => Slider(
         value: bloc.state.speed.unitInterval,
         min: 0,
         max: 1,

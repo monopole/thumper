@@ -1,3 +1,6 @@
+## 0.1.6
+ - Removed width parameter.
+
 ## 0.1.5
  - Add link to gol_grid.
 
