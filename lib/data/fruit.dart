@@ -1,6 +1,4 @@
 /// Fruit is used in tests and demos.
-/// Better for reading than ints, easier than strings.
-/// Could use these in an image search to make an Iterable<Image>.
 enum Fruit {
   apple,
   apricot,
