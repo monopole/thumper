@@ -1,3 +1,6 @@
+## 0.1.5
+ - Add link to gol_grid.
+
 ## 0.1.4
  - Fix descript.
 

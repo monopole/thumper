@@ -11,4 +11,4 @@ cd thumper/example
 flutter -d web run
 ```
 
-See also [gol_grid](https://github.com/monopole/gol_grid).
+Another demo in [gol_grid](https://pub.dev/packages/gol_grid).
