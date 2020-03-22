@@ -1,21 +1,30 @@
 # thumper
 
-A widget for controlling an `Iterable`.
-Shows reset, forward step, play, pause and speed controls.
+A flutter widget for controlling an `Iterable`.
 
-| initial                 | later                   |
+Buttons allow reset, forward step, and play/pause.
+
+A slider controls iteration speed.
+
+
+| initial                 | playing                 |
 | ----------------------- | ----------------------- |
 | ![screen shot 1][shot1] | ![screen shot 2][shot2] |
 
-[shot1]: ./images/shot1.png
-[shot2]: ./images/shot2.png
-
 ### Demo
 
-```
+Requires [flutter].
+
+```bash
 git clone git@github.com:monopole/thumper.git
 cd thumper/example
 flutter -d web run
 ```
 
-Another demo in [gol_grid](https://pub.dev/packages/gol_grid).
+For another thumper demo see the [gol_grid] widget.
+
+
+[gol_grid]: https://pub.dev/packages/gol_grid
+[shot1]: ./images/shot1.png
+[shot2]: ./images/shot2.png
+[flutter]: https://flutter.dev/docs/get-started/install
