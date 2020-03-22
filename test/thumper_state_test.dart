@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
+import '../lib/data/fruit.dart';
 import '../lib/src/thumper_speed.dart';
 import '../lib/src/thumper_state.dart';
-import '../lib/miscdata/fruit.dart';
 
 void main() {
   SpeedRange range;

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import '../lib/data/fruit.dart';
 import '../lib/thumper.dart';
-import '../lib/miscdata/fruit.dart';
 
 void main() {
   test('thumper_state', () {

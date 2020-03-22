@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thumper/miscdata/fruit.dart';
+import 'package:thumper/data/fruit.dart';
 import 'package:thumper/thumper.dart';
 
 void main() => runApp(ThumperApp());
