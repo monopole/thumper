@@ -30,8 +30,6 @@ class _MyScaffold extends StatelessWidget {
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          //mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
               child: Center(
@@ -41,7 +39,7 @@ class _MyScaffold extends StatelessWidget {
                 ),
               ),
             ),
-            Thumper<Fruit>(),
+            Expanded( child: Thumper<Fruit>()),
           ],
         ),
       );

@@ -116,13 +116,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  grid_world:
-    dependency: "direct main"
-    description:
-      name: grid_world
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.10"
   html:
     dependency: transitive
     description:
