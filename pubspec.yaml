@@ -1,6 +1,6 @@
 name: thumper
-description: A flutter widget for controlling an Iterable. Shows reset, step, play/pause and speed controls.
-version: 0.1.1
+description: A flutter widget for controlling an Iterable. Shows reset, step, play, pause and speed controls.
+version: 0.1.2
 homepage: https://github.com/monopole/thumper
 
 environment:
