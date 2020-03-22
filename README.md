@@ -3,7 +3,6 @@
 A flutter widget for controlling an `Iterable`.
 
 Buttons allow reset, forward step, and play/pause.
-
 A slider controls iteration speed.
 
 ### Example
@@ -14,9 +13,8 @@ The [example] iterates through a list of fruit names.
 | ----------------------- | ----------------------- |
 | ![screen shot 1][shot1] | ![screen shot 2][shot2] |
 
-### Demo
 
-Requires [flutter].
+To run it, install [flutter] then:
 
 ```bash
 git clone git@github.com:monopole/thumper.git
