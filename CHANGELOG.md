@@ -1,6 +1,9 @@
+## 0.1.10
+ - Added screenshits.  Haven't figured out how to fix docs version bump.
+
 ## 0.1.9
  - Fix doc
- 
+
 ## 0.1.8
  - Remove typo.  Really need a precommit here.
 
