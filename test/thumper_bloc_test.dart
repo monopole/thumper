@@ -1,17 +1,19 @@
 import 'dart:async';
 import 'package:test/test.dart';
-import '../lib/data/fruit.dart';
-import '../lib/src/thumper_state.dart';
-import '../lib/src/thumper_event.dart';
-import '../lib/src/thumper_bloc.dart';
-import '../lib/src/thumper_speed.dart';
+import 'package:thumper/data/fruit.dart';
+import 'package:thumper/src/thumper_bloc.dart';
+import 'package:thumper/src/thumper_event.dart';
+import 'package:thumper/src/thumper_speed.dart';
+import 'package:thumper/src/thumper_state.dart';
+
+// ignore_for_file: cascade_invocations
 
 void main() {
   ThumperBloc thumperBloc;
   ThumperSpeed currentSpeed;
   StreamController<int> thumpStreamController;
-  final Fruit firstFruit = Fruit.values[0];
-  final SpeedRange speedRange = SpeedRange.fromInts([400, 1000, 30, 800, 100]);
+  final firstFruit = Fruit.values[0];
+  final speedRange = SpeedRange.fromInts(const [400, 1000, 30, 800, 100]);
 
   ThumperState<Fruit> makeTsReset(ThumperSpeed s, Fruit f, int c) =>
       ThumperState<Fruit>(s, ThumperPower.reset, f, c);
@@ -21,7 +23,7 @@ void main() {
       ThumperState<Fruit>(s, ThumperPower.on, f, c);
 
   ThumperState<Fruit> tsAtSpeed(ThumperSpeed s) =>
-      ThumperState<Fruit>(s, ThumperPower.reset, firstFruit, 0);
+      ThumperState<Fruit>(s, ThumperPower.reset, firstFruit);
 
   Stream<int> makeThumperStream(ThumperSpeed s) {
     currentSpeed = s;
@@ -107,7 +109,7 @@ void main() {
     thumperBloc.close();
   });
 
-  expectThumperRunningAtSpeed(ThumperSpeed s) {
+  void expectThumperRunningAtSpeed(ThumperSpeed s) {
     expect(thumpStreamController, isNotNull);
     expect(thumpStreamController.isPaused, false);
     expect(thumpStreamController.hasListener, true);
@@ -115,10 +117,10 @@ void main() {
   }
 
   test('full lifecycle test', () async {
-    var stateIterator = new StreamIterator<ThumperState>(thumperBloc);
+    final stateIterator = StreamIterator<ThumperState>(thumperBloc);
 
     // Confirm initial state.
-    bool ready = await stateIterator.moveNext();
+    var ready = await stateIterator.moveNext();
     expect(ready, true);
     expect(stateIterator.current,
         equals(makeTsReset(speedRange[0], firstFruit, 0)));

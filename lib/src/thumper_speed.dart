@@ -1,36 +1,48 @@
+import 'package:meta/meta.dart';
+
 /// [ThumperSpeed] is an immutable speed associated with a [SpeedRange].
+@immutable
 class ThumperSpeed {
-  final int index;
+  /// Make a speed with the given parent range and position in that range.
+  const ThumperSpeed(this._range, this.index);
+
+  /// [SpeedRange] parent to this [ThumperSpeed] instance.
   final SpeedRange _range;
 
-  const ThumperSpeed(int i, SpeedRange r)
-      : index = i,
-        _range = r;
+  /// Index into [_range].
+  final int index;
 
-  Duration get period => _range.duration(this);
+  /// The Thumper's period (inverse frequency).
+  Duration get period => _range.period(this);
 
   @override
   String toString() => name;
 
   @override
-  bool operator ==(o) => index == o.index;
+  bool operator ==(dynamic other) => index == other.index;
 
-  bool operator >(o) => index > o.index;
+  /// Speed comparator.
+  bool operator >(ThumperSpeed other) => index > other.index;
 
-  bool operator <(o) => index < o.index;
+  /// Speed comparator.
+  bool operator <(ThumperSpeed other) => index < other.index;
 
   @override
   int get hashCode => index.hashCode;
 
+  /// Speed's name, as derived from its range.
   String get name => _range.name(this);
 
-  /// Return a speed slower than this.
+  /// The speed one step slower than this in the common range.
   ThumperSpeed get slower => _range.slower(this);
 
-  /// Return a speed faster than this.
+  /// The speed one step faster than this in the common range.
   ThumperSpeed get faster => _range.faster(this);
 
+  /// True if this is the fastest speed in its range.
   bool get isFastest => _range.isFastest(this);
+
+  /// True if this is the slowest speed in its range.
   bool get isSlowest => _range.isSlowest(this);
 
   /// Value of this speed in the unitary range [0..1].
@@ -39,57 +51,72 @@ class ThumperSpeed {
 
 /// SpeedRange is an immutable, sorted list of [ThumperSpeed] with
 /// some handy mapping functions.
+@immutable
 class SpeedRange {
-  final List<Duration> _periods;
-  final int numDivisions;
-  final double _halfDivision;
-
-  ThumperSpeed operator [](int k) => ThumperSpeed(k, this);
-
-  /// TODO: allow custom speed names.  Make sure everything is unique.
-  const SpeedRange(List<Duration> p, int nd, double hd)
-      : _periods = p,
-        numDivisions = nd,
-        _halfDivision = hd;
+  /// Make a range with the given set of periods.
+  /// TODO: allow custom speed names.
+  /// TODO: Make sure everything is unique.
+  const SpeedRange._(this._periods, this.numDivisions, this._halfDivision);
 
   /// Interprets the ints as lengths, in milliseconds, of periods.
   factory SpeedRange.fromInts(List<int> original) {
     if (original.length < 2) {
-      throw "making a range requires at least two elements";
+      throw ArgumentError('making a range requires at least two elements');
     }
-    final lst = List<int>.from(original);
-    lst.sort((a, b) => b.compareTo(a)); // decreasing
+    // sort in decreasing order (slow speed to fast)
+    final lst = List<int>.from(original)..sort((a, b) => b.compareTo(a));
 
     final periods = List<Duration>(lst.length);
-    for (int i = 0; i < lst.length; i++) {
+    for (var i = 0; i < lst.length; i++) {
       periods[i] = Duration(milliseconds: lst[i]);
     }
-    final int nDiv = periods.length - 1;
-    return SpeedRange(
-        List.unmodifiable(periods), nDiv, 0.5 * ((unity - zero) / nDiv));
+    final nDiv = periods.length - 1;
+    return SpeedRange._(
+        List.unmodifiable(periods), nDiv, 0.5 * ((_unity - _zero) / nDiv));
   }
 
+  /// A slider has this many divisions
+  /// (one less than the number of stopping positions).
+  final int numDivisions;
+  final List<Duration> _periods;
+  final double _halfDivision;
+
+  /// Offer the speed at its index.
+  ThumperSpeed operator [](int k) => ThumperSpeed(this, k);
+
+  /// A printable name for the speed.
   String name(ThumperSpeed s) => s.index <= 0
-      ? "slowest"
+      ? 'slowest'
       : (s.index >= numDivisions
-          ? "fastest"
-          : "mid_${s.index}_of_${numDivisions - 1}");
+          ? 'fastest'
+          : 'mid_${s.index}_of_${numDivisions - 1}');
 
-  Duration duration(ThumperSpeed s) => _periods[s.index];
+  /// Speed's period.
+  Duration period(ThumperSpeed s) => _periods[s.index];
 
+  /// Return a faster speed.
   ThumperSpeed faster(ThumperSpeed s) => this[s.index + 1];
+
+  /// True if this speed is the fastest.
   bool isFastest(ThumperSpeed s) => s.index == numDivisions;
+
+  /// Return the fastest speed.
   ThumperSpeed get fastest => this[numDivisions];
 
+  /// Return a slower speed.
   ThumperSpeed slower(ThumperSpeed s) => this[s.index - 1];
+
+  /// True if this speed is the slowest.
   bool isSlowest(ThumperSpeed s) => s.index == 0;
+
+  /// Return the slowest speed.
   ThumperSpeed get slowest => this[0];
 
   /// Minimum of unitary range.
-  static final zero = 0;
+  static const _zero = 0;
 
   /// Maximum of unitary range.
-  static final unity = 1;
+  static const _unity = 1;
 
   /// Maps given speed to a double in the unitary range.
   double mapSpeedToUnitInterval(ThumperSpeed s) => s.index * 2 * _halfDivision;
@@ -120,9 +147,9 @@ class SpeedRange {
   ///   0.125 <= x < 0.375 : faster1 ...
   ///
   /// etc., which is given by the following slightly paranoid function:
-  int _speedIndex(double unitaryRange) => (unitaryRange <= zero)
+  int _speedIndex(double unitaryRange) => (unitaryRange <= _zero)
       ? 0
-      : (unitaryRange >= unity)
+      : (unitaryRange >= _unity)
           ? numDivisions
           : ((unitaryRange + _halfDivision) * numDivisions).floor();
 }

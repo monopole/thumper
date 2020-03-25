@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/data/fruit.dart';
-import '../lib/thumper.dart';
+import 'package:thumper/data/fruit.dart';
+import 'package:thumper/thumper.dart';
 
 void main() {
   test('thumper_state', () {
-    var thumper = Thumper<Fruit>();
-    expect(thumper.toString(), equals('Thumper<Fruit>'));
+    const thumper = Thumper<Fruit>();
+    expect(thumper.toString(), startsWith('Thumper<Fruit>('));
   });
 
   // TODO write an actual widget test presumably

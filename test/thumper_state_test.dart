@@ -1,14 +1,14 @@
 import 'package:test/test.dart';
-import '../lib/data/fruit.dart';
-import '../lib/src/thumper_speed.dart';
-import '../lib/src/thumper_state.dart';
+import 'package:thumper/data/fruit.dart';
+import 'package:thumper/src/thumper_speed.dart';
+import 'package:thumper/src/thumper_state.dart';
 
 void main() {
   SpeedRange range;
   ThumperState aState;
 
   setUp(() {
-    range = SpeedRange.fromInts([400, 1000, 30, 800, 100]);
+    range = SpeedRange.fromInts(const [400, 1000, 30, 800, 100]);
     aState = ThumperState<Fruit>.init(Fruit.peach, range[0]);
   });
 
@@ -19,7 +19,7 @@ void main() {
 
   test('toString', () {
     expect(ThumperState<Fruit>.init(Fruit.peach, range[0]).toString(),
-        "ThumperPower.reset:slowest:Fruit.peach:0");
+        'ThumperPower.reset:slowest:Fruit.peach:0');
   });
 
   test('pauseAndResume', () {

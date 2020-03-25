@@ -5,6 +5,7 @@ import 'package:thumper/thumper.dart';
 
 void main() => runApp(DemoApp());
 
+/// A toy app to demonstrate Thumper widget.
 class DemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -24,7 +25,7 @@ class _MyScaffold extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
-            title: Text('Fruit Thumper'),
+            title: const Text('Fruit Thumper'),
             leading: Icon(Icons.menu),
           ),
           body: Column(
@@ -38,17 +39,15 @@ class _MyScaffold extends StatelessWidget {
                   ),
                 ),
               ),
-              Thumper<Fruit>(),
+              const Thumper<Fruit>(),
             ],
           ),
         ),
       );
 
-  Widget _textElement(String text) {
-    return Text(text,
-        style: TextStyle(
-          fontSize: 64,
-          color: Colors.greenAccent,
-        ));
-  }
+  Widget _textElement(String text) => Text(text,
+      style: TextStyle(
+        fontSize: 64,
+        color: Colors.greenAccent,
+      ));
 }

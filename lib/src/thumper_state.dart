@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'thumper_speed.dart';
 
 /// Power status of thumper.
@@ -14,40 +15,47 @@ enum ThumperPower { reset, off, on }
 /// and the current instance of E.
 ///
 /// The term 'thumper' is from Dune by Frank Herbert.
-///
+@immutable
 class ThumperState<E> {
-  factory ThumperState.init(E e, ThumperSpeed s) =>
-      ThumperState(s, ThumperPower.reset, e, 0);
+  /// Make a new state.
+  const ThumperState(this.speed, this.power, this.thing, [this.thumpCount = 0]);
 
+  /// Make an initial state.
+  factory ThumperState.init(E e, ThumperSpeed s) =>
+      ThumperState(s, ThumperPower.reset, e);
+
+  /// The current speed.
   final ThumperSpeed speed;
+
+  /// Current power setting.
   final ThumperPower power;
+
+  /// The current instance of E from the iterator.
   final E thing;
+
+  /// How many thumps since the last reset?
   final int thumpCount;
 
-  ThumperState(ThumperSpeed s, ThumperPower p, E e, [int c = 0])
-      : speed = s,
-        power = p,
-        thing = e,
-        thumpCount = c;
+  @override
+  String toString() => '$power:$speed:$thing:$thumpCount';
 
   @override
-  String toString() => "$power:$speed:$thing:$thumpCount";
-
-  @override
-  bool operator ==(o) =>
-      identical(this, o) ||
-      speed == o.speed &&
-          power == o.power &&
-          thing == o.thing &&
-          thumpCount == o.thumpCount;
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      speed == other.speed &&
+          power == other.power &&
+          thing == other.thing &&
+          thumpCount == other.thumpCount;
 
   @override
   int get hashCode =>
       (thing.hashCode * thumpCount * speed.hashCode) ^ (power.index + 1);
 
+  /// Make a paused version of this.
   ThumperState<E> pause() =>
       ThumperState<E>(speed, ThumperPower.off, thing, thumpCount);
 
+  /// Make a resumed version of this.
   ThumperState<E> resume() =>
       ThumperState<E>(speed, ThumperPower.on, thing, thumpCount);
 }

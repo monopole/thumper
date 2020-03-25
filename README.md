@@ -7,6 +7,9 @@ A [`Thumper`] is a flutter widget that controls an `Iterable`.
 Buttons allow reset, forward step, and play/pause.
 A slider controls iteration speed.
 
+There's no backward step, as the basic Iterator interface
+doesn't require a reversible state generator.
+
 ### Example
 
 The [example] iterates through a list of [fruits].
@@ -20,7 +23,9 @@ To try it in chrome, install [beta channel flutter] then:
 
 ```bash
 git clone git@github.com:monopole/thumper.git
-cd thumper/example
+cd thumper
+flutter test
+cd example
 flutter -d chrome run
 ```
 

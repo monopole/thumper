@@ -1,5 +1,8 @@
+## 1.0.0
+ - Stabilize API.  Impose strict linting.
+
 ## 0.1.10
- - Added screenshits.  Haven't figured out how to fix docs version bump.
+ - Added screenshots.  Haven't figured out how to fix docs w/o bumping version.
 
 ## 0.1.9
  - Fix doc

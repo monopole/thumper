@@ -1,8 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'dart:async';
+import 'package:bloc/bloc.dart';
 import 'thumper_event.dart';
-import 'thumper_state.dart';
 import 'thumper_speed.dart';
+import 'thumper_state.dart';
 
 /// ThumperBloc maps ThumperEvent to ThumperState<E>.
 ///
@@ -14,9 +14,31 @@ import 'thumper_speed.dart';
 /// The iterable must be non-empty (at least one E), so that the initial state
 /// can be defined.  The iterable is used to make an iterator, and if the
 /// iterator runs out, the iterable is used to make another iterator to start
-/// over.
-///
+/// over again.
 class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
+  /// ThumperBloc accepts
+  /// - A non-empty Iterable<E>.
+  /// - A [SpeedRange].
+  /// - A factory func that accepts a speed and returns a Stream<int>.
+  ///   The factory presumably makes a stream that emits ints at the given
+  ///   speed for use as a timer (but nothing checks this).
+  ThumperBloc(
+    Iterable<E> iterable,
+    SpeedRange range,
+    Stream<int> Function(ThumperSpeed) stFactoryFunc,
+  )   : assert(iterable.isNotEmpty && range != null && stFactoryFunc != null,
+            'nonsensical ctor args'),
+        _iterable = iterable,
+        _speedRange = range,
+        _timerFactoryFunc = stFactoryFunc,
+        _autoThumpsRemaining = _defaultInitialThumpCountdown;
+
+  /// Make a bloc from an iterable.
+  factory ThumperBloc.fromIterable(Iterable<E> iterable) => ThumperBloc(
+      iterable,
+      SpeedRange.fromInts(const [400, 1000, 30, 800, 100]),
+      makeThumperWithSpeed);
+
   static const int _defaultInitialThumpCountdown = 1000;
 
   // TODO: change to stream bool, since the int is meaningless
@@ -27,6 +49,8 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
 
   final SpeedRange _speedRange;
 
+  /// A slider has this many divisions
+  /// (one less than the number of stopping positions).
   int get numDivisions => _speedRange.numDivisions;
 
   Iterator<E> _iterator;
@@ -35,31 +59,10 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// How many automatic thumps remaining before automatic thumping should stop?
   int _autoThumpsRemaining;
 
-  /// ThumperBloc accepts
-  /// - A non-empty Iterable<E>.
-  /// - A _speedRange.
-  /// - A stream factory that accepts a speed and returns a Stream<int>.
-  ///   The factory presumably makes a stream that emits ints at the given
-  ///   speed for use as a timer.
-  ThumperBloc(
-    Iterable<E> iterable,
-    SpeedRange range,
-    Stream<int> Function(ThumperSpeed) stFactoryFunc,
-  )   : assert(iterable.isNotEmpty && range != null && stFactoryFunc != null),
-        _iterable = iterable,
-        _speedRange = range,
-        _timerFactoryFunc = stFactoryFunc,
-        _autoThumpsRemaining = _defaultInitialThumpCountdown;
-
-  factory ThumperBloc.fromIterable(Iterable<E> iterable) => ThumperBloc(
-      iterable,
-      SpeedRange.fromInts([400, 1000, 30, 800, 100]),
-      makeThumperWithSpeed);
-
   /// Makes a stream that can be used to control the rate of
   /// automatic thumps.
   static Stream<int> makeThumperWithSpeed(ThumperSpeed speed) =>
-      Stream.periodic(speed.period, (int k) => k);
+      Stream.periodic(speed.period, (k) => k);
 
   @override
   Future<void> close() {
@@ -79,8 +82,9 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     return ThumperState.init(_iterator.current, _speedRange.slowest);
   }
 
+  /// Send an event if the slider changes.
   void reactToSpeedValue(double value) {
-    ThumperSpeed s = _speedRange.mapUnitIntervalToSpeed(value);
+    final s = _speedRange.mapUnitIntervalToSpeed(value);
     if (s > state.speed) {
       add(ThumperEvent.accelerated);
     } else if (s < state.speed) {
@@ -93,10 +97,9 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     if (_iterator.moveNext()) {
       return;
     }
-    _iterator = _iterable.iterator;
     // The constructor asserted a non-empty iterator, so we can call .moveNext
     // and be assured that .current will return a valid E.
-    _iterator.moveNext();
+    _iterator = _iterable.iterator..moveNext();
   }
 
   @override
@@ -116,7 +119,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     } else if (event == ThumperEvent.thumpedManually) {
       yield* _mapThumpedManuallyToState();
     } else {
-      throw "wut?";
+      throw ArgumentError('cannot handle $event');
     }
   }
 
@@ -155,7 +158,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       return;
     }
     final s = _newStateAtSpeed(state.speed.faster);
-    _restartThumperIfRunning(s.speed);
+    await _restartThumperIfRunning(s.speed);
     yield s;
   }
 
@@ -164,7 +167,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       return;
     }
     final s = _newStateAtSpeed(state.speed.slower);
-    _restartThumperIfRunning(s.speed);
+    await _restartThumperIfRunning(s.speed);
     yield s;
   }
 
@@ -173,7 +176,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
 
   /// If stream exists, just cancel it.  If it should be running,
   /// restart it at the given speed.
-  void _restartThumperIfRunning(ThumperSpeed newSpeed) async {
+  Future<void> _restartThumperIfRunning(ThumperSpeed newSpeed) async {
     if (_thumperSubscription != null) {
       await _thumperSubscription.cancel();
       _thumperSubscription = null;
@@ -210,7 +213,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   }
 
   Stream<ThumperState<E>> _mapRewoundToState() async* {
-    _thumperSubscription?.cancel();
+    await _thumperSubscription?.cancel();
     _thumperSubscription = null;
     yield initialState;
   }

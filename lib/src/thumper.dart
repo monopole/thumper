@@ -1,33 +1,51 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'thumper_bloc.dart';
-import 'thumper_state.dart';
 import 'thumper_event.dart';
+import 'thumper_state.dart';
 
 /// A Thumper<E> is a row of controls associated with a ThumperBloc<E>,
 /// which in turn contains Iterable<E>.
 /// Controls include reset, forward step, play, pause, and speed.
+/// There's no backward step, as the Iterator interface (wisely) doesn't
+/// require a reversible process.
 /// This widget doesn't show E or make an calls on E, but must get an
 /// instance of ThumperBloc<E> from the context (hence the parameterization).
-/// This widget has a fixed size, like an Icon.
+/// This widget has a fixed size (like an Icon).
+@immutable
 class Thumper<E> extends StatelessWidget {
+  /// Make a [Thumper].
+  const Thumper({
+    Key key,
+    this.onColor = Colors.lightBlueAccent,
+    this.offColor = Colors.blueGrey,
+  }) : super(key: key);
+
   /// Fixed width of this widget in logical pixels.
   static const int width = 330;
 
   /// Fixed height of this widget in logical pixels.
   static const int height = 60;
+
+  /// Color controls when thumping.
   final Color onColor;
+
+  /// Color controls when not thumping.
   final Color offColor;
 
-  Thumper({
-    this.onColor = Colors.lightBlueAccent,
-    this.offColor = Colors.blueGrey,
-  });
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Color>('onColor', onColor));
+    properties.add(DiagnosticsProperty<Color>('offColor', offColor));
+  }
 
-  Widget build(BuildContext c) => Container(
+  @override
+  Widget build(BuildContext context) => Container(
         constraints: BoxConstraints.tightFor(
             width: width.toDouble(), height: height.toDouble()),
-        child: _controlRow(c),
+        child: _controlRow(context),
       );
 
   Widget _controlRow(BuildContext c) {
@@ -50,11 +68,11 @@ class Thumper<E> extends StatelessWidget {
 
   Widget _themedSlider(BuildContext c, ThumperBloc<E> bloc) => SliderTheme(
         data: SliderTheme.of(c).copyWith(
-          trackHeight: 4.0,
+          trackHeight: 4,
           thumbColor: onColor,
-          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7.0),
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
           overlayColor: Colors.purple.withAlpha(32),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
         ),
         child: _rawSlider(bloc),
       );
@@ -103,12 +121,10 @@ class Thumper<E> extends StatelessWidget {
     return [];
   }
 
-  IconButton _button(IconData d, void Function() f) {
-    return IconButton(
-      color: onColor,
-      disabledColor: offColor,
-      icon: Icon(d),
-      onPressed: f,
-    );
-  }
+  IconButton _button(IconData d, void Function() f) => IconButton(
+        color: onColor,
+        disabledColor: offColor,
+        icon: Icon(d),
+        onPressed: f,
+      );
 }
