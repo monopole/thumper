@@ -1,3 +1,6 @@
+## 1.0.1
+ - fix performance bug
+ 
 ## 1.0.0
  - Stabilize API.  Impose strict linting.
 

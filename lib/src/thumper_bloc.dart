@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:pedantic/pedantic.dart';
 import 'thumper_event.dart';
 import 'thumper_speed.dart';
 import 'thumper_state.dart';
@@ -158,7 +159,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       return;
     }
     final s = _newStateAtSpeed(state.speed.faster);
-    await _restartThumperIfRunning(s.speed);
+    unawaited(_restartThumperIfRunning(s.speed));
     yield s;
   }
 
@@ -167,7 +168,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       return;
     }
     final s = _newStateAtSpeed(state.speed.slower);
-    await _restartThumperIfRunning(s.speed);
+    unawaited(_restartThumperIfRunning(s.speed));
     yield s;
   }
 
@@ -178,7 +179,8 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// restart it at the given speed.
   Future<void> _restartThumperIfRunning(ThumperSpeed newSpeed) async {
     if (_thumperSubscription != null) {
-      await _thumperSubscription.cancel();
+      final cancelThis = _thumperSubscription;
+      unawaited(cancelThis.cancel());
       _thumperSubscription = null;
       if (state.power == ThumperPower.on) {
         _subscribeToThumper(newSpeed);

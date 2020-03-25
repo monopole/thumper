@@ -5,6 +5,8 @@ import 'thumper_bloc.dart';
 import 'thumper_event.dart';
 import 'thumper_state.dart';
 
+// ignore_for_file: diagnostic_describe_all_properties
+
 /// A Thumper<E> is a row of controls associated with a ThumperBloc<E>,
 /// which in turn contains Iterable<E>.
 /// Controls include reset, forward step, play, pause, and speed.
@@ -33,13 +35,6 @@ class Thumper<E> extends StatelessWidget {
 
   /// Color controls when not thumping.
   final Color offColor;
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<Color>('onColor', onColor));
-    properties.add(DiagnosticsProperty<Color>('offColor', offColor));
-  }
 
   @override
   Widget build(BuildContext context) => Container(

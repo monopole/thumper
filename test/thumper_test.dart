@@ -5,7 +5,7 @@ import 'package:thumper/thumper.dart';
 void main() {
   test('thumper_state', () {
     const thumper = Thumper<Fruit>();
-    expect(thumper.toString(), startsWith('Thumper<Fruit>('));
+    expect(thumper.toString(), startsWith('Thumper<Fruit>'));
   });
 
   // TODO write an actual widget test presumably
