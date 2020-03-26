@@ -67,7 +67,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
 
   @override
   Future<void> close() {
-    _thumperSubscription?.cancel();
+    _cancelSubscription();
     return super.close();
   }
 
@@ -100,7 +100,9 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     }
     // The constructor asserted a non-empty iterator, so we can call .moveNext
     // and be assured that .current will return a valid E.
-    _iterator = _iterable.iterator..moveNext();
+    _iterator = _iterable.iterator;
+    // ignore: cascade_invocations
+    _iterator.moveNext();
   }
 
   @override
@@ -179,13 +181,21 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// restart it at the given speed.
   Future<void> _restartThumperIfRunning(ThumperSpeed newSpeed) async {
     if (_thumperSubscription != null) {
-      final cancelThis = _thumperSubscription;
-      unawaited(cancelThis.cancel());
-      _thumperSubscription = null;
+      _cancelSubscription();
       if (state.power == ThumperPower.on) {
         _subscribeToThumper(newSpeed);
       }
     }
+  }
+
+  void _cancelSubscription() {
+    if (_thumperSubscription == null) {
+      return;
+    }
+    final cancelMe = _thumperSubscription;
+    unawaited(cancelMe.cancel());
+    // Set this to null to signal it needs recreation.
+    _thumperSubscription = null;
   }
 
   Stream<ThumperState<E>> _mapThumpedAutomaticallyToState() async* {
@@ -215,8 +225,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   }
 
   Stream<ThumperState<E>> _mapRewoundToState() async* {
-    await _thumperSubscription?.cancel();
-    _thumperSubscription = null;
+    _cancelSubscription();
     yield initialState;
   }
 }

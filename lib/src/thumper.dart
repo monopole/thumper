@@ -6,6 +6,7 @@ import 'thumper_event.dart';
 import 'thumper_state.dart';
 
 // ignore_for_file: diagnostic_describe_all_properties
+// ignore_for_file: avoid_redundant_argument_values
 
 /// A Thumper<E> is a row of controls associated with a ThumperBloc<E>,
 /// which in turn contains Iterable<E>.
@@ -65,17 +66,19 @@ class Thumper<E> extends StatelessWidget {
         data: SliderTheme.of(c).copyWith(
           trackHeight: 4,
           thumbColor: onColor,
-          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
           overlayColor: Colors.purple.withAlpha(32),
-          overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+          // TODO: figure out why making these shapes 'const'
+          // seems to dramatically slow things down
+          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7),
+          overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
         ),
         child: _rawSlider(bloc),
       );
 
   Widget _rawSlider(ThumperBloc<E> bloc) => Slider(
         value: bloc.state.speed.unitInterval,
-        min: 0,
-        max: 1,
+        min: 0, // Default values for min and max - but being explicit as
+        max: 1, // this particular range setting is crucial.
         activeColor: onColor,
         divisions: bloc.numDivisions,
         onChanged: (s) => bloc.reactToSpeedValue(s),

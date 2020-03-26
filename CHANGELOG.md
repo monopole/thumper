@@ -1,3 +1,6 @@
+## 1.0.2
+ - fix the real performance bug :P
+
 ## 1.0.1
  - fix performance bug
  
