@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'power.dart';
 import 'thumper_bloc.dart';
 import 'thumper_event.dart';
 import 'thumper_state.dart';
@@ -8,14 +9,21 @@ import 'thumper_state.dart';
 // ignore_for_file: diagnostic_describe_all_properties
 // ignore_for_file: avoid_redundant_argument_values
 
-/// A Thumper<E> is a row of controls associated with a ThumperBloc<E>,
-/// which in turn contains Iterable<E>.
-/// Controls include reset, forward step, play, pause, and speed.
+/// A Thumper<E> widget is a row of controls associated with a ThumperBloc<E>,
+/// which in turn contains an Iterable<E>.
+///
+/// Controls include reset, forward step, play, pause, and frequency
+/// selection.
+///
 /// There's no backward step, as the Iterator interface (wisely) doesn't
 /// require a reversible process.
+///
 /// This widget doesn't show E or make an calls on E, but must get an
 /// instance of ThumperBloc<E> from the context (hence the parameterization).
+///
 /// This widget has a fixed size (like an Icon).
+///
+/// The term 'thumper' is from Dune by Frank Herbert.
 @immutable
 class Thumper<E> extends StatelessWidget {
   /// Make a [Thumper].
@@ -56,7 +64,7 @@ class Thumper<E> extends StatelessWidget {
       ),
       BlocBuilder<ThumperBloc<E>, ThumperState>(
         condition: (previousState, incomingState) =>
-            incomingState.speed != previousState.speed,
+            incomingState.frequency != previousState.frequency,
         builder: (context, state) => _themedSlider(context, bloc),
       ),
     ]);
@@ -76,17 +84,17 @@ class Thumper<E> extends StatelessWidget {
       );
 
   Widget _rawSlider(ThumperBloc<E> bloc) => Slider(
-        value: bloc.state.speed.unitInterval,
+        value: bloc.state.frequency.unitInterval,
         min: 0, // Default values for min and max - but being explicit as
         max: 1, // this particular range setting is crucial.
         activeColor: onColor,
         divisions: bloc.numDivisions,
-        onChanged: (s) => bloc.reactToSpeedValue(s),
+        onChanged: (s) => bloc.reactToFrequencyValue(s),
       );
 
   List<Widget> _buttonList(ThumperBloc<E> bloc) {
     switch (bloc.state.power) {
-      case ThumperPower.reset:
+      case Power.reset:
         {
           return [
             _button(Icons.replay, null),
@@ -96,7 +104,7 @@ class Thumper<E> extends StatelessWidget {
           ];
         }
         break;
-      case ThumperPower.off:
+      case Power.idle:
         {
           return [
             _button(Icons.replay, () => bloc.add(ThumperEvent.rewound)),
@@ -106,7 +114,7 @@ class Thumper<E> extends StatelessWidget {
           ];
         }
         break;
-      case ThumperPower.on:
+      case Power.running:
         {
           return [
             _button(Icons.replay, null),

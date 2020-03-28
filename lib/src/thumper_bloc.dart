@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:pedantic/pedantic.dart';
+import 'frequency.dart';
+import 'power.dart';
+import 'spectrum.dart';
 import 'thumper_event.dart';
-import 'thumper_speed.dart';
 import 'thumper_state.dart';
 
 /// ThumperBloc maps ThumperEvent to ThumperState<E>.
 ///
 /// This bloc contains and manages a timer that sends events to this (the bloc),
-/// so as to emit states at a particular rate.  The bloc accepts a factory
-/// function to make the timer.
+/// so as to emit states at a particular frequency.  The bloc's constructor
+/// accepts a factory function to make the timer.
 ///
 /// Each state contains an E.  To get them, the block requires an Iterable<E>.
+///
 /// The iterable must be non-empty (at least one E), so that the initial state
 /// can be defined.  The iterable is used to make an iterator, and if the
 /// iterator runs out, the iterable is used to make another iterator to start
@@ -19,46 +22,44 @@ import 'thumper_state.dart';
 class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// ThumperBloc accepts
   /// - A non-empty Iterable<E>.
-  /// - A [SpeedRange].
-  /// - A factory func that accepts a speed and returns a Stream<bool>.
-  ///   The factory should make a stream that emits bools, presumably
-  ///   at the given frequency for use as a timer.  Nothing here assures
-  ///   this behavior - a test can inject a stream that emits on test
-  ///   events.  The bool values aren't consulted; only their appearance on
+  /// - A [Spectrum] of allowed thumper frequency values.
+  /// - A factory func that accepts a frequency and returns a Stream<bool>.
+  ///   Said stream should emit booleans (of irrelevant value) at the given
+  ///   frequency. The stream is used by the bloc to control thumping frequency.
+  ///   A test can inject a stream that emits on test events.
+  ///   The boolean values aren't consulted; only their appearance on
   ///   the stream matters.
   ThumperBloc(
-    Iterable<E> iterable,
-    SpeedRange range,
-    Stream<bool> Function(ThumperSpeed) stFactoryFunc,
-  )   : assert(iterable.isNotEmpty && range != null && stFactoryFunc != null,
-            'nonsensical ctor args'),
-        _iterable = iterable,
-        _speedRange = range,
-        _timerFactoryFunc = stFactoryFunc,
+    this._iterable,
+    this._spectrum,
+    this._timerFactoryFunc,
+  )   : assert(_iterable.isNotEmpty, 'iterable cannot be empty'),
+        assert(_spectrum != null, 'must specify spectrum'),
+        assert(_timerFactoryFunc != null, 'must specify a timer factory'),
         _autoThumpsRemaining = _defaultInitialThumpCountdown;
 
-  /// Make a bloc from an iterable.
+  /// Make a [ThumperBloc]] from an iterable and a reasonable default spectrum.
   factory ThumperBloc.fromIterable(Iterable<E> iterable) => ThumperBloc(
       iterable,
-      SpeedRange.fromPeriodsInMilliSec(const [1000, 500, 250, 100, 50, 25]),
-      makeThumperWithSpeed);
+      Spectrum.fromPeriodsInMilliSec(const [1000, 500, 250, 100, 50, 25]),
+      makeThumperWithFrequency);
 
   static const int _defaultInitialThumpCountdown = 1000;
 
   /// An arbitrary boolean sent on the thumper stream.
-  /// Exposed for use in tests.
-  static const irrelevantBoolValue = true;
+  /// It doesn't matter if this is true or false.
+  static const _arbitraryBoolean = true;
 
-  final Stream<bool> Function(ThumperSpeed) _timerFactoryFunc;
+  final Stream<bool> Function(Frequency) _timerFactoryFunc;
 
   /// Holds the stuff to emit.
   final Iterable<E> _iterable;
 
-  final SpeedRange _speedRange;
+  final Spectrum _spectrum;
 
-  /// A slider has this many divisions
-  /// (one less than the number of stopping positions).
-  int get numDivisions => _speedRange.numDivisions;
+  /// The number of divisions that a slider widget would need to represent
+  /// the set of frequencies available in the [Thumper].
+  int get numDivisions => _spectrum.numDivisions;
 
   Iterator<E> _iterator;
   StreamSubscription<bool> _thumperSubscription;
@@ -68,8 +69,8 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
 
   /// Makes a stream that can be used to control the rate of
   /// automatic thumps.
-  static Stream<bool> makeThumperWithSpeed(ThumperSpeed speed) =>
-      Stream.periodic(speed.period, (k) => irrelevantBoolValue);
+  static Stream<bool> makeThumperWithFrequency(Frequency f) =>
+      Stream.periodic(f.period, (k) => _arbitraryBoolean);
 
   @override
   Future<void> close() {
@@ -77,7 +78,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     return super.close();
   }
 
-  void _subscribeToThumper(ThumperSpeed s) {
+  void _subscribeToThumper(Frequency s) {
     _thumperSubscription = _timerFactoryFunc(s)
         .listen((x) => add(ThumperEvent.thumpedAutomatically));
   }
@@ -86,16 +87,16 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   ThumperState<E> get initialState {
     _iterator = _iterable.iterator;
     _thump();
-    return ThumperState.init(_iterator.current, _speedRange.slowest);
+    return ThumperState.init(_iterator.current, _spectrum.slowest);
   }
 
-  /// Send an event if the slider changes.
-  void reactToSpeedValue(double value) {
-    final s = _speedRange.mapUnitIntervalToSpeed(value);
-    if (s > state.speed) {
-      add(ThumperEvent.accelerated);
-    } else if (s < state.speed) {
-      add(ThumperEvent.decelerated);
+  /// Use this to tell the thumper that the frequency should change.
+  void reactToFrequencyValue(double value) {
+    final s = _spectrum.mapUnitIntervalToFrequency(value);
+    if (s > state.frequency) {
+      add(ThumperEvent.increased);
+    } else if (s < state.frequency) {
+      add(ThumperEvent.decreased);
     }
   }
 
@@ -119,10 +120,10 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       yield* _mapPausedToState();
     } else if (event == ThumperEvent.resumed) {
       yield* _mapResumedToState();
-    } else if (event == ThumperEvent.accelerated) {
-      yield* _mapAcceleratedToState();
-    } else if (event == ThumperEvent.decelerated) {
-      yield* _mapDeceleratedToState();
+    } else if (event == ThumperEvent.increased) {
+      yield* _mapIncreasedToState();
+    } else if (event == ThumperEvent.decreased) {
+      yield* _mapDecreasedToState();
     } else if (event == ThumperEvent.thumpedAutomatically) {
       yield* _mapThumpedAutomaticallyToState();
     } else if (event == ThumperEvent.thumpedManually) {
@@ -133,11 +134,11 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   }
 
   Stream<ThumperState<E>> _mapResumedToState() async* {
-    if (state.power == ThumperPower.on) {
+    if (state.power == Power.running) {
       return;
     }
     if (_thumperSubscription == null) {
-      _subscribeToThumper(state.speed);
+      _subscribeToThumper(state.frequency);
     } else {
       if (_thumperSubscription.isPaused) {
         _thumperSubscription.resume();
@@ -149,7 +150,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   }
 
   Stream<ThumperState<E>> _mapPausedToState() async* {
-    if (state.power == ThumperPower.off) {
+    if (state.power == Power.idle) {
       return;
     }
     if (_thumperSubscription != null) {
@@ -162,34 +163,34 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     yield state.pause();
   }
 
-  Stream<ThumperState<E>> _mapAcceleratedToState() async* {
-    if (state.speed.isFastest) {
+  Stream<ThumperState<E>> _mapIncreasedToState() async* {
+    if (state.frequency.isHighest) {
       return;
     }
-    final s = _newStateAtSpeed(state.speed.faster);
-    unawaited(_restartThumperIfRunning(s.speed));
+    final s = _newStateAtFrequency(state.frequency.higher);
+    unawaited(_restartThumperIfRunning(s.frequency));
     yield s;
   }
 
-  Stream<ThumperState<E>> _mapDeceleratedToState() async* {
-    if (state.speed.isSlowest) {
+  Stream<ThumperState<E>> _mapDecreasedToState() async* {
+    if (state.frequency.isLowest) {
       return;
     }
-    final s = _newStateAtSpeed(state.speed.slower);
-    unawaited(_restartThumperIfRunning(s.speed));
+    final s = _newStateAtFrequency(state.frequency.lower);
+    unawaited(_restartThumperIfRunning(s.frequency));
     yield s;
   }
 
-  ThumperState<E> _newStateAtSpeed(ThumperSpeed s) =>
-      ThumperState<E>(s, state.power, state.thing, state.thumpCount);
+  ThumperState<E> _newStateAtFrequency(Frequency f) =>
+      ThumperState<E>(f, state.power, state.thing, state.thumpCount);
 
   /// If stream exists, just cancel it.  If it should be running,
-  /// restart it at the given speed.
-  Future<void> _restartThumperIfRunning(ThumperSpeed newSpeed) async {
+  /// restart it at the given frequency.
+  Future<void> _restartThumperIfRunning(Frequency newFrequency) async {
     if (_thumperSubscription != null) {
       _cancelSubscription();
-      if (state.power == ThumperPower.on) {
-        _subscribeToThumper(newSpeed);
+      if (state.power == Power.running) {
+        _subscribeToThumper(newFrequency);
       }
     }
   }
@@ -208,26 +209,26 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
     _thump();
     if (_autoThumpsRemaining > 1) {
       _autoThumpsRemaining--;
-      yield ThumperState<E>(
-          state.speed, state.power, _iterator.current, state.thumpCount + 1);
+      yield ThumperState<E>(state.frequency, state.power, _iterator.current,
+          state.thumpCount + 1);
       return;
     }
     _thumperSubscription?.pause();
     _autoThumpsRemaining = _defaultInitialThumpCountdown;
     yield ThumperState<E>(
-        state.speed, ThumperPower.off, _iterator.current, state.thumpCount + 1);
+        state.frequency, Power.idle, _iterator.current, state.thumpCount + 1);
   }
 
   Stream<ThumperState<E>> _mapThumpedManuallyToState() async* {
     _thump();
-    if (state.power == ThumperPower.reset) {
+    if (state.power == Power.reset) {
       _autoThumpsRemaining = _defaultInitialThumpCountdown;
-      yield ThumperState<E>(state.speed, ThumperPower.off, _iterator.current,
-          state.thumpCount + 1);
+      yield ThumperState<E>(
+          state.frequency, Power.idle, _iterator.current, state.thumpCount + 1);
       return;
     }
     yield ThumperState<E>(
-        state.speed, state.power, _iterator.current, state.thumpCount + 1);
+        state.frequency, state.power, _iterator.current, state.thumpCount + 1);
   }
 
   Stream<ThumperState<E>> _mapRewoundToState() async* {

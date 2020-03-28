@@ -1,3 +1,6 @@
+## 2.0.0
+ - Improve terminology in API.  This is a backward incompatible change.
+
 ## 1.0.2
  - fix the real performance bug :P
 

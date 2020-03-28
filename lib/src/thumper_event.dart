@@ -4,18 +4,18 @@ enum ThumperEvent {
   /// countdown restored to its initial value.
   rewound,
 
-  /// Thumper paused; speed not changed.
+  /// Thumper paused; frequency not changed.
   /// Thump countdown is reset to its initial value.
   paused,
 
-  /// Thumper resumed at current speed.
+  /// Thumper resumed at current frequency.
   resumed,
 
-  /// Thumping speed increased.
-  accelerated,
+  /// Thumping frequency increased.
+  increased,
 
-  /// Thumping speed decreased.
-  decelerated,
+  /// Thumping frequency decreased.
+  decreased,
 
   /// Thump and decrement a thump countdown so that automatic thumping
   /// can be automatically paused when the countdown reaches zero.
