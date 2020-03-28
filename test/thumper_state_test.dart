@@ -8,7 +8,7 @@ void main() {
   ThumperState aState;
 
   setUp(() {
-    range = SpeedRange.fromInts(const [400, 1000, 30, 800, 100]);
+    range = SpeedRange.fromPeriodsInMilliSec(const [400, 1000, 30, 800, 100]);
     aState = ThumperState<Fruit>.init(Fruit.peach, range[0]);
   });
 

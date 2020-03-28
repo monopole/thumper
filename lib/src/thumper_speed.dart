@@ -55,11 +55,11 @@ class ThumperSpeed {
 class SpeedRange {
   /// Make a range with the given set of periods.
   /// TODO: allow custom speed names.
-  /// TODO: Make sure everything is unique.
+  /// TODO: assure each entry unique.
   const SpeedRange._(this._periods, this.numDivisions, this._halfDivision);
 
-  /// Interprets the ints as lengths, in milliseconds, of periods.
-  factory SpeedRange.fromInts(List<int> original) {
+  /// Interprets the int arguments as period lengths in milliseconds.
+  factory SpeedRange.fromPeriodsInMilliSec(List<int> original) {
     if (original.length < 2) {
       throw ArgumentError('making a range requires at least two elements');
     }

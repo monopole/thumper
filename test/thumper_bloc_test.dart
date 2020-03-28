@@ -11,9 +11,9 @@ import 'package:thumper/src/thumper_state.dart';
 void main() {
   ThumperBloc thumperBloc;
   ThumperSpeed currentSpeed;
-  StreamController<int> thumpStreamController;
+  StreamController<bool> thumpStreamController;
   final firstFruit = Fruit.values[0];
-  final speedRange = SpeedRange.fromInts(const [400, 1000, 30, 800, 100]);
+  final speedRange = SpeedRange.fromPeriodsInMilliSec(const [400, 1000, 30, 800, 100]);
 
   ThumperState<Fruit> makeTsReset(ThumperSpeed s, Fruit f, int c) =>
       ThumperState<Fruit>(s, ThumperPower.reset, f, c);
@@ -25,10 +25,10 @@ void main() {
   ThumperState<Fruit> tsAtSpeed(ThumperSpeed s) =>
       ThumperState<Fruit>(s, ThumperPower.reset, firstFruit);
 
-  Stream<int> makeThumperStream(ThumperSpeed s) {
+  Stream<bool> makeThumperStream(ThumperSpeed s) {
     currentSpeed = s;
     thumpStreamController?.close();
-    thumpStreamController = StreamController<int>(sync: true);
+    thumpStreamController = StreamController<bool>(sync: true);
     return thumpStreamController.stream;
   }
 
@@ -136,7 +136,7 @@ void main() {
     expectThumperRunningAtSpeed(speedRange[0]);
 
     // Send an automatic thump, wait for an echo.
-    thumpStreamController.sink.add(1);
+    thumpStreamController.sink.add(ThumperBloc.irrelevantBoolValue);
     ready = await stateIterator.moveNext();
     expect(ready, true);
     expect(stateIterator.current.thumpCount, 1);
@@ -144,7 +144,7 @@ void main() {
         equals(makeTsOn(speedRange[0], Fruit.apricot, 1)));
 
     // Send an automatic thump, wait for an echo.
-    thumpStreamController.sink.add(1);
+    thumpStreamController.sink.add(ThumperBloc.irrelevantBoolValue);
     ready = await stateIterator.moveNext();
     expect(ready, true);
     expect(stateIterator.current.thumpCount, 2);
@@ -189,7 +189,7 @@ void main() {
     expectThumperRunningAtSpeed(speedRange[1]);
 
     // Send an automatic thump, wait for an echo.
-    thumpStreamController.sink.add(1);
+    thumpStreamController.sink.add(ThumperBloc.irrelevantBoolValue);
     ready = await stateIterator.moveNext();
     expect(ready, true);
     expect(stateIterator.current,

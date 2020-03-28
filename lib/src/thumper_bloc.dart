@@ -20,13 +20,16 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// ThumperBloc accepts
   /// - A non-empty Iterable<E>.
   /// - A [SpeedRange].
-  /// - A factory func that accepts a speed and returns a Stream<int>.
-  ///   The factory presumably makes a stream that emits ints at the given
-  ///   speed for use as a timer (but nothing checks this).
+  /// - A factory func that accepts a speed and returns a Stream<bool>.
+  ///   The factory should make a stream that emits bools, presumably
+  ///   at the given frequency for use as a timer.  Nothing here assures
+  ///   this behavior - a test can inject a stream that emits on test
+  ///   events.  The bool values aren't consulted; only their appearance on
+  ///   the stream matters.
   ThumperBloc(
     Iterable<E> iterable,
     SpeedRange range,
-    Stream<int> Function(ThumperSpeed) stFactoryFunc,
+    Stream<bool> Function(ThumperSpeed) stFactoryFunc,
   )   : assert(iterable.isNotEmpty && range != null && stFactoryFunc != null,
             'nonsensical ctor args'),
         _iterable = iterable,
@@ -37,13 +40,16 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   /// Make a bloc from an iterable.
   factory ThumperBloc.fromIterable(Iterable<E> iterable) => ThumperBloc(
       iterable,
-      SpeedRange.fromInts(const [400, 1000, 30, 800, 100]),
+      SpeedRange.fromPeriodsInMilliSec(const [1000, 500, 250, 100, 50, 25]),
       makeThumperWithSpeed);
 
   static const int _defaultInitialThumpCountdown = 1000;
 
-  // TODO: change to stream bool, since the int is meaningless
-  final Stream<int> Function(ThumperSpeed) _timerFactoryFunc;
+  /// An arbitrary boolean sent on the thumper stream.
+  /// Exposed for use in tests.
+  static const irrelevantBoolValue = true;
+
+  final Stream<bool> Function(ThumperSpeed) _timerFactoryFunc;
 
   /// Holds the stuff to emit.
   final Iterable<E> _iterable;
@@ -55,15 +61,15 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   int get numDivisions => _speedRange.numDivisions;
 
   Iterator<E> _iterator;
-  StreamSubscription<int> _thumperSubscription;
+  StreamSubscription<bool> _thumperSubscription;
 
   /// How many automatic thumps remaining before automatic thumping should stop?
   int _autoThumpsRemaining;
 
   /// Makes a stream that can be used to control the rate of
   /// automatic thumps.
-  static Stream<int> makeThumperWithSpeed(ThumperSpeed speed) =>
-      Stream.periodic(speed.period, (k) => k);
+  static Stream<bool> makeThumperWithSpeed(ThumperSpeed speed) =>
+      Stream.periodic(speed.period, (k) => irrelevantBoolValue);
 
   @override
   Future<void> close() {
