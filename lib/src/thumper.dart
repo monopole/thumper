@@ -77,7 +77,9 @@ class Thumper<E> extends StatelessWidget {
           overlayColor: Colors.purple.withAlpha(32),
           // TODO: figure out why making these shapes 'const'
           // seems to dramatically slow things down
+          // ignore: prefer_const_constructors
           thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7),
+          // ignore: prefer_const_constructors
           overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
         ),
         child: _rawSlider(bloc),

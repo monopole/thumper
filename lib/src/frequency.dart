@@ -14,23 +14,23 @@ class Frequency {
   /// Index into [_spectrum].
   final int index;
 
-  /// Period is inverse frequency.
-  Duration get period => _spectrum.period(this);
-
   @override
   String toString() => name;
 
   @override
   bool operator ==(dynamic other) => index == other.index;
 
-  /// Frequency comparator.
+  /// Frequency comparator.  This works because of the sort in [Spectrum].
   bool operator >(Frequency other) => index > other.index;
 
-  /// Frequency comparator.
+  /// Frequency comparator.  This works because of the sort in [Spectrum].
   bool operator <(Frequency other) => index < other.index;
 
   @override
   int get hashCode => index.hashCode;
+
+  /// Period is inverse frequency.
+  Duration get period => _spectrum.period(this);
 
   /// Frequency's name, as derived from its spectrum.
   String get name => _spectrum.name(this);

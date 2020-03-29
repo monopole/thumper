@@ -22,11 +22,17 @@ The [example] iterates through a list of [fruits].
 To try it in chrome, install [beta channel flutter] then:
 
 ```bash
+# Confirm you have some devices.
+flutter devices
+
+# Get the code
 git clone git@github.com:monopole/thumper.git
 cd thumper
-flutter test
-cd example
-flutter -d chrome run
+
+# then either
+make demo-chrome
+# or
+make demo-android
 ```
 
 For a more complex `Thumper` demo see the [`GolGrid`] widget.

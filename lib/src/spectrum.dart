@@ -3,8 +3,8 @@ import 'frequency.dart';
 
 /// Spectrum is an immutable, sorted list of unique periods
 /// (or equivalently, instances of [Frequency]), with
-/// some utility functions for moving up and down
-/// spectrum and mapping to slider values.
+/// some utility functions for moving up and down spectrum
+/// and mapping to values in a unitary range (for a Slider).
 @immutable
 class Spectrum {
   /// Make a [Spectrum] with the given set of periods.

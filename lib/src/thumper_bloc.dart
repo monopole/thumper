@@ -58,7 +58,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   final Spectrum _spectrum;
 
   /// The number of divisions that a slider widget would need to represent
-  /// the set of frequencies available in the [Thumper].
+  /// the set of frequencies available.
   int get numDivisions => _spectrum.numDivisions;
 
   Iterator<E> _iterator;
