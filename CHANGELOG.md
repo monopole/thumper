@@ -1,3 +1,6 @@
+## 2.1.0
+ - Expose autoThumpLimit parameter in ThumperBloc constructor.
+ 
 ## 2.0.0
  - Improve terminology in API.  This is a backward incompatible change.
 

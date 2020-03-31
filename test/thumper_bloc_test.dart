@@ -41,7 +41,7 @@ void main() {
   setUp(() {
     currentFrequency = null;
     thumperBloc = ThumperBloc<Fruit>(
-        List.from(Fruit.values), spectrum, makeThumperStream);
+        List.from(Fruit.values), spectrum, makeThumperStream, 100);
   });
 
   tearDown(() {

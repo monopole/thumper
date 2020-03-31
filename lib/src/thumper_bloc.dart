@@ -29,22 +29,29 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   ///   A test can inject a stream that emits on test events.
   ///   The boolean values aren't consulted; only their appearance on
   ///   the stream matters.
+  /// - A limit to automatic thumping.  Hitting it automatically pauses.
   ThumperBloc(
     this._iterable,
     this._spectrum,
     this._timerFactoryFunc,
+    this.autoThumpLimit,
   )   : assert(_iterable.isNotEmpty, 'iterable cannot be empty'),
         assert(_spectrum != null, 'must specify spectrum'),
         assert(_timerFactoryFunc != null, 'must specify a timer factory'),
-        _autoThumpsRemaining = _defaultInitialThumpCountdown;
+        assert(autoThumpLimit > 0, 'autoThumpLimit must be > 0'),
+        _autoThumpsRemaining = autoThumpLimit;
 
   /// Make a [ThumperBloc]] from an iterable and a reasonable default spectrum.
-  factory ThumperBloc.fromIterable(Iterable<E> iterable) => ThumperBloc(
-      iterable,
-      Spectrum.fromPeriodsInMilliSec(const [1000, 500, 250, 100, 50, 25]),
-      makeThumperWithFrequency);
+  factory ThumperBloc.fromIterable(Iterable<E> iterable,
+          {int autoThumpLimit = 10000}) =>
+      ThumperBloc(
+          iterable,
+          Spectrum.fromPeriodsInMilliSec(const [1000, 500, 250, 100, 50, 25]),
+          makeThumperWithFrequency,
+          autoThumpLimit);
 
-  static const int _defaultInitialThumpCountdown = 1000;
+  /// Automatically pause automatic iteration when this limit hit.
+  final int autoThumpLimit;
 
   /// An arbitrary boolean sent on the thumper stream.
   /// It doesn't matter if this is true or false.
@@ -64,7 +71,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   Iterator<E> _iterator;
   StreamSubscription<bool> _thumperSubscription;
 
-  /// How many automatic thumps remaining before automatic thumping should stop?
+  /// How many automatic thumps remaining before hitting [autoThumpLimit]?
   int _autoThumpsRemaining;
 
   /// Makes a stream that can be used to control the rate of
@@ -214,7 +221,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
       return;
     }
     _thumperSubscription?.pause();
-    _autoThumpsRemaining = _defaultInitialThumpCountdown;
+    _autoThumpsRemaining = autoThumpLimit;
     yield ThumperState<E>(
         state.frequency, Power.idle, _iterator.current, state.thumpCount + 1);
   }
@@ -222,7 +229,7 @@ class ThumperBloc<E> extends Bloc<ThumperEvent, ThumperState<E>> {
   Stream<ThumperState<E>> _mapThumpedManuallyToState() async* {
     _thump();
     if (state.power == Power.reset) {
-      _autoThumpsRemaining = _defaultInitialThumpCountdown;
+      _autoThumpsRemaining = autoThumpLimit;
       yield ThumperState<E>(
           state.frequency, Power.idle, _iterator.current, state.thumpCount + 1);
       return;
