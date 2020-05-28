@@ -1,6 +1,9 @@
+## 2.1.1
+ - Upgrade to bloc 4.0.0
+
 ## 2.1.0
  - Expose autoThumpLimit parameter in ThumperBloc constructor.
- 
+
 ## 2.0.0
  - Improve terminology in API.  This is a backward incompatible change.
 
@@ -9,7 +12,7 @@
 
 ## 1.0.1
  - fix performance bug
- 
+
 ## 1.0.0
  - Stabilize API.  Impose strict linting.
 
