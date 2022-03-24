@@ -1,3 +1,6 @@
+## 2.1.2
+ - Upgrade to bloc 8.0.1
+
 ## 2.1.1
  - Upgrade to bloc 4.0.0
 

@@ -1,7 +1,10 @@
-name: thumperdemo
+name: example
 description: Example using thumper
 
-version: 1.0.0+1
+version: 1.0.1
+
+# This is an unpublishable example with intentional path dependencies.
+publish_to: none
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
