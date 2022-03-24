@@ -1,10 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'power.dart';
-import 'thumper_bloc.dart';
-import 'thumper_event.dart';
-import 'thumper_state.dart';
+import 'package:thumper_bloc/thumper_bloc.dart';
 
 // ignore_for_file: diagnostic_describe_all_properties
 // ignore_for_file: avoid_redundant_argument_values
@@ -28,7 +24,7 @@ import 'thumper_state.dart';
 class Thumper<E> extends StatelessWidget {
   /// Make a [Thumper].
   const Thumper({
-    Key key,
+    Key? key,
     this.onColor = Colors.lightBlueAccent,
     this.offColor = Colors.blueGrey,
   }) : super(key: key);
@@ -55,15 +51,15 @@ class Thumper<E> extends StatelessWidget {
   Widget _controlRow(BuildContext c) {
     final bloc = BlocProvider.of<ThumperBloc<E>>(c);
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      BlocBuilder<ThumperBloc<E>, ThumperState>(
-        condition: (previousState, incomingState) =>
+      BlocBuilder<ThumperBloc<E>, ThumperState<E>>(
+        buildWhen: (previousState, incomingState) =>
             incomingState.power != previousState.power,
         builder: (context, state) => Row(
           children: _buttonList(bloc),
         ),
       ),
-      BlocBuilder<ThumperBloc<E>, ThumperState>(
-        condition: (previousState, incomingState) =>
+      BlocBuilder<ThumperBloc<E>, ThumperState<E>>(
+        buildWhen: (previousState, incomingState) =>
             incomingState.frequency != previousState.frequency,
         builder: (context, state) => _themedSlider(context, bloc),
       ),
@@ -101,35 +97,31 @@ class Thumper<E> extends StatelessWidget {
           return [
             _button(Icons.replay, null),
             _button(
-                Icons.skip_next, () => bloc.add(ThumperEvent.thumpedManually)),
-            _button(Icons.play_arrow, () => bloc.add(ThumperEvent.resumed)),
+                Icons.skip_next, () => bloc.add(ThumperEventThumpedManually())),
+            _button(Icons.play_arrow, () => bloc.add(ThumperEventResumed())),
           ];
         }
-        break;
       case Power.idle:
         {
           return [
-            _button(Icons.replay, () => bloc.add(ThumperEvent.rewound)),
+            _button(Icons.replay, () => bloc.add(ThumperEventRewound())),
             _button(Icons.skip_next,
-                () => bloc.add(ThumperEvent.thumpedAutomatically)),
-            _button(Icons.play_arrow, () => bloc.add(ThumperEvent.resumed)),
+                () => bloc.add(ThumperEventThumpedAutomatically())),
+            _button(Icons.play_arrow, () => bloc.add(ThumperEventResumed())),
           ];
         }
-        break;
       case Power.running:
         {
           return [
             _button(Icons.replay, null),
             _button(Icons.skip_next, null),
-            _button(Icons.pause, () => bloc.add(ThumperEvent.paused)),
+            _button(Icons.pause, () => bloc.add(ThumperEventPaused())),
           ];
         }
-        break;
     }
-    return [];
   }
 
-  IconButton _button(IconData d, void Function() f) => IconButton(
+  IconButton _button(IconData d, void Function() ?f) => IconButton(
         color: onColor,
         disabledColor: offColor,
         icon: Icon(d),

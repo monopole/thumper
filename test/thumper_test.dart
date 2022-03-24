@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:thumper/data/fruit.dart';
+import 'package:thumper_bloc/thumper_bloc.dart';
 import 'package:thumper/thumper.dart';
 
 void main() {

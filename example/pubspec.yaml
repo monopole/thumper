@@ -4,17 +4,18 @@ description: Example using thumper
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.16.1 <3.0.0"
 
 dependencies:
+  thumper_bloc:
+    path: ../../thumper_bloc
   flutter:
     sdk: flutter
   thumper:
     path: ../
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  lints: ^1.0.1
 
 flutter:
   uses-material-design: true

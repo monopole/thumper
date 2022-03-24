@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thumper/data/fruit.dart';
+import 'package:thumper_bloc/thumper_bloc.dart';
 import 'package:thumper/thumper.dart';
 
 void main() => runApp(DemoApp());
@@ -9,18 +9,18 @@ void main() => runApp(DemoApp());
 class DemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Thumper Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+    title: 'Thumper Demo',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    home: Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          title: const Text('Fruit Thumper'),
+          leading: Icon(Icons.menu),
         ),
-        home: Scaffold(
-            backgroundColor: Colors.black,
-            appBar: AppBar(
-              title: const Text('Fruit Thumper'),
-              leading: Icon(Icons.menu),
-            ),
-            body: ThumperDemo()),
-      );
+        body: ThumperDemo()),
+  );
 }
 
 /// A demo widget containing a [Thumper] and associated [ThumperBloc].
@@ -41,23 +41,23 @@ class DemoApp extends StatelessWidget {
 class ThumperDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BlocProvider(
-        create: (ctx) =>
-            ThumperBloc<Fruit>.fromIterable(List.from(Fruit.values)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: BlocBuilder<ThumperBloc<Fruit>, ThumperState>(
-                  builder: (ctx, state) =>
-                      _textElement(state.thing.toString().substring(6)),
-                ),
-              ),
+    create: (ctx) =>
+    ThumperBloc<Fruit>.fromIterable(List.from(Fruit.values)),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: Center(
+            child: BlocBuilder<ThumperBloc<Fruit>, ThumperState<Fruit>>(
+              builder: (ctx, state) =>
+                  _textElement(state.thing.toString().substring(6)),
             ),
-            const Thumper<Fruit>(),
-          ],
+          ),
         ),
-      );
+        const Thumper<Fruit>(),
+      ],
+    ),
+  );
 
   Widget _textElement(String text) => Text(text,
       style: TextStyle(

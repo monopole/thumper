@@ -7,7 +7,7 @@ test:
 
 .PHONY: lint
 lint:
-	dartanalyzer --options analysis_options.yaml .
+	dart analyze
 
 .PHONY: demo-chrome
 demo-chrome:
