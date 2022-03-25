@@ -1,3 +1,9 @@
+## 2.2.0
+ - General dependency upgrades.
+
+## 2.1.2
+ - Upgrade to bloc 8.0.1
+
 ## 2.1.2
  - Upgrade to bloc 8.0.1
 

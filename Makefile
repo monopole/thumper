@@ -11,7 +11,6 @@ lint:
 
 .PHONY: demo-chrome
 demo-chrome:
-	# This may require beta channel flutter.
 	cd example; flutter -d chrome run
 
 .PHONY: demo-android

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thumper_bloc/thumper_bloc.dart';
+import 'power.dart';
+import 'thumper_bloc.dart';
+import 'thumper_event.dart';
+import 'thumper_state.dart';
 
 // ignore_for_file: diagnostic_describe_all_properties
 // ignore_for_file: avoid_redundant_argument_values
